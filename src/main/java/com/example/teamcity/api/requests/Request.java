@@ -8,8 +8,8 @@ public class Request {
      * Request - это класс описывающий меняющиеся параметры запроса, такие как спецификация,эндпоинт
      * (relative URL. model)
      **/
-    private final RequestSpecification sprc;
-    private final Endpoint endpoint;
+    protected final RequestSpecification sprc;
+    protected final Endpoint endpoint;
 
     public Request(RequestSpecification sprc, Endpoint endpoint) {
         this.sprc = sprc;
