@@ -9,10 +9,10 @@ import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpStatus;
 
 @SuppressWarnings("unchecked")
-public final class CheckBase<T extends BaseModel> extends Request implements CrudInterface {
+public final class CheckedBase<T extends BaseModel> extends Request implements CrudInterface {
     private final UncheckedBase uncheckedBase;
 
-    public CheckBase(RequestSpecification sprc, Endpoint endpoint) {
+    public CheckedBase(RequestSpecification sprc, Endpoint endpoint) {
         super(sprc, endpoint);
         this.uncheckedBase = new UncheckedBase(sprc,endpoint);
     }

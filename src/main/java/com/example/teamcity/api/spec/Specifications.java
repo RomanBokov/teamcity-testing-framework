@@ -8,35 +8,34 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 
-public class Specification {
-    private static Specification spec;
+public class Specifications {
+    private static Specifications spec;
 
-    private Specification() {}
+    private Specifications() {}
 
-    public static Specification getSpec() {
-        if (spec == null) {
-            spec = new Specification();
-        }
-        return spec;
-    }
-
-    private RequestSpecBuilder reqBuilder(){
+    private static RequestSpecBuilder reqBuilder(){
         var requeaBuilder = new RequestSpecBuilder();
         requeaBuilder.addFilter(new RequestLoggingFilter());
         requeaBuilder.addFilter(new ResponseLoggingFilter());
+        requeaBuilder.setContentType(ContentType.JSON);
+        requeaBuilder.setAccept(ContentType.JSON);
         return  requeaBuilder;
     }
 
-    public RequestSpecification unauthSpec(){
+    public static RequestSpecification superUserAuth(){
         var requeaBuilder = reqBuilder();
-        requeaBuilder.setContentType(ContentType.JSON);
-        requeaBuilder.setAccept(ContentType.JSON);
+        requeaBuilder.setBaseUri("http://%s:%s@%s".formatted("",Config.getProperty("superUserToken"),Config.getProperty("host")));
         return requeaBuilder.build();
     }
 
-    public RequestSpecification authSpec(User user){
+    public static RequestSpecification unauthSpec(){
         var requeaBuilder = reqBuilder();
-        requeaBuilder.setBaseUri("http://"+ user.getUsername()+":"+ user.getPassword()+"@"+ Config.getProperty("host"));
+        return requeaBuilder.build();
+    }
+
+    public static RequestSpecification authSpec(User user){
+        var requeaBuilder = reqBuilder();
+        requeaBuilder.setBaseUri("http://%s:%s@%s".formatted(user.getUsername(),user.getPassword(),Config.getProperty("host")));
         return requeaBuilder.build();
     }
 }
