@@ -22,7 +22,7 @@ public class Specifications {
         return  requeaBuilder;
     }
 
-    public static RequestSpecification superUserAuth(){
+    public static RequestSpecification superUserSpec(){
         var requeaBuilder = reqBuilder();
         requeaBuilder.setBaseUri("http://%s:%s@%s".formatted("",Config.getProperty("superUserToken"),Config.getProperty("host")));
         return requeaBuilder.build();
