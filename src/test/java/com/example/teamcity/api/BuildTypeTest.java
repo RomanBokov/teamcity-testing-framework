@@ -53,12 +53,12 @@ public class BuildTypeTest extends BaseApiTest {
 
     @Test(description = "Project admin should be able to create build type for their project", groups = {"Positive", "Roles"})
     public void projectAdminCreatesBuildTypeTest() {
-        step("Create user");
-        step("Create project");
-        step("Grant user PROJECT_ADMIN role in project");
+        step("Создайте пользователя");
+        step("Создайте проект");
+        step("Предоставьте пользователю PROJECT_ADMIN роль администратора проекта");
 
-        step("Create buildType for project by user (PROJECT_ADMIN)");
-        step("Check buildType was created successfully");
+        step("Создайте тип сборки для проекта пользователем (PROJECT_ADMIN)");
+        step("Проверьте, что buildType был успешно создан");
     }
 
     @Test(description = "Project admin should not be able to create build type for not their project", groups = {"Negative", "Roles"})
