@@ -1,8 +1,5 @@
 package com.example.teamcity.api;
-import com.example.teamcity.api.models.BaseModel;
-import com.example.teamcity.api.models.BuildType;
-import com.example.teamcity.api.models.Project;
-import com.example.teamcity.api.models.User;
+import com.example.teamcity.api.models.*;
 import com.example.teamcity.api.requests.CheckedRequests;
 import com.example.teamcity.api.requests.unchecked.UncheckedBase;
 import com.example.teamcity.api.spec.Specifications;
@@ -20,45 +17,37 @@ import static io.qameta.allure.Allure.step;
 public class BuildTypeTest extends BaseApiTest {
     @Test(description = "User should be able to create build type", groups = {"Positive", "CRUD"})
     public void userCreatesBuildTypeTest() {
-        var user = generate(User.class);
+        superUserCheckRequest.getRequest(USERS).create(testData.getUser());
+        var userCheckRequest = new CheckedRequests(Specifications.authSpec(testData.getUser()));
 
-        superUserCheckRequest.getRequest(USERS).create(user);
-        var userCheckRequest = new CheckedRequests(Specifications.authSpec(user));
 
-        BaseModel project = generate(Project.class);
+        userCheckRequest.<Project>getRequest(PROJECTS).create(testData.getProject());
 
-        project = userCheckRequest.<Project>getRequest(PROJECTS).create(project);
 
-        var buildType = generate(Arrays.asList(project), BuildType.class);
 
-        userCheckRequest.getRequest(BUILD_TYPES).create(buildType);
+        userCheckRequest.getRequest(BUILD_TYPES).create(testData.getBuildType());
 
-        var createdBuildType = userCheckRequest.<BuildType>getRequest(BUILD_TYPES).read(buildType.getId());
+        var createdBuildType = userCheckRequest.<BuildType>getRequest(BUILD_TYPES).read(testData.getBuildType().getId());
 
-        softy.assertEquals(buildType.getName(), createdBuildType.getName(), "Build type name is not correct");
+        softy.assertEquals(testData.getBuildType().getName(), createdBuildType.getName(), "Build type name is not correct");
 
     }
 
     @Test(description = "User should not be able to create two build types with the same id", groups = {"Negative", "CRUD"})
     public void userCreatesTwoBuildTypesWithTheSameIdTest() {
-        var user = generate(User.class);
+        var buildTypeWithSameId = generate(Arrays.asList(testData.getProject()), BuildType.class, testData.getBuildType().getId());
 
-        superUserCheckRequest.getRequest(USERS).create(user);
-        var userCheckRequest = new CheckedRequests(Specifications.authSpec(user));
+        superUserCheckRequest.getRequest(USERS).create(testData.getUser());
+        var userCheckRequest = new CheckedRequests(Specifications.authSpec(testData.getUser()));
 
-        BaseModel project = generate(Project.class);
+        userCheckRequest.<Project>getRequest(PROJECTS).create(testData.getProject());
 
-        project = userCheckRequest.<Project>getRequest(PROJECTS).create(project);
-
-        var buildType1 = generate(Arrays.asList(project), BuildType.class);
-        var buildType2 = generate(Arrays.asList(project), BuildType.class, buildType1.getId());
-
-        userCheckRequest.getRequest(BUILD_TYPES).create(buildType1);
-        new UncheckedBase(Specifications.authSpec(user), BUILD_TYPES)
-                .create(buildType2)
+        userCheckRequest.getRequest(BUILD_TYPES).create(testData.getBuildType());
+        new UncheckedBase(Specifications.authSpec(testData.getUser()), BUILD_TYPES)
+                .create(buildTypeWithSameId)
                 .then()
                 .assertThat()
-                .statusCode(HttpStatus.SC_BAD_REQUEST).body(Matchers.containsString("The build configuration / template ID \"%s\" is already used by another configuration or template".formatted(buildType1.getId())));
+                .statusCode(HttpStatus.SC_BAD_REQUEST).body(Matchers.containsString("The build configuration / template ID \"%s\" is already used by another configuration or template".formatted(testData.getBuildType().getId())));
 
     }
 
